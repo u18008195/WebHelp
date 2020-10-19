@@ -1,0 +1,421 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<title>New Help</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css"> 
+<!--
+body{margin: 5px;} 
+.selected {font-weight: normal;background-color: #E2E2E2;padding:0px,2px,0px,2px;}
+.unselected { font-weight: normal;padding:0px,2px,0px,2px;}
+.hand { cursor: hand; }
+.p {height: 16px;width: 16px;vertical-align: middle;border: 0;}
+div,body { font-family: Tahoma, Verdana; font-size: 11px; }
+A:link {text-decoration: none; color:#000000}
+A:visited {text-decoration: none; color: #000000}
+A:active {text-decoration: none; color: #000000 }
+A:hover {text-decoration: none; color: #FF0000 }
+
+-->
+</style>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var cl,pn,pm,bl;
+var path = 'icons/';
+var pos = 0;
+var icon;
+var tar = 'content';
+var display;
+var imgi;
+var AutoCollapse;
+var LastSelected = -1;
+var loaded = false;
+var max;
+var divlist;
+
+function SetEnv(v,a){
+
+if(v==0){ 
+	pn = [['daplus.gif','daminus.gif'],['tplus.gif','tminus.gif'],['uaplus.gif','uaminus.gif'],['splus.gif','sminus.gif']];
+	PreloadImg('downangle.gif','tshaped.gif','upangle.gif','sline.gif','daplus.gif','daminus.gif','tplus.gif','tminus.gif','uaplus.gif','uaminus.gif','splus.gif','sminus.gif','blank.gif','line.gif');
+}else{
+	pn = [['plus.gif','minus.gif']];
+	PreloadImg('plus.gif','minus.gif','blank.gif');
+
+}
+AutoCollapse = a;
+}
+
+ function PreloadImg(){
+if (document.images) { 
+	var imgs = PreloadImg.arguments; 
+	var pload = new Array();
+	for (var i=0; i<imgs.length; i++) { 
+		pload[i] = new Image; 
+		pload[i].src = path + imgs[i]; 
+	} 
+} 
+ } 
+
+function get(o){
+var x;
+if(document.all) x=document.all[o]; 
+if(document.getElementById) x=document.getElementById(o);
+
+return x;
+}
+
+
+function pnImg(img){
+var i,j;
+for(i=0;i<=3;i++){
+	for(j=0;j<=1;j++){
+	if(img.substr(img.lastIndexOf('/') + 1)== pn[i][j]){
+		return i;
+	}
+	}
+}
+}
+function icon(img){
+var f;
+f = img.substr(img.lastIndexOf('/') + 1);
+if( f=='1.gif' || f=='2.gif'){
+	return ['1.gif','2.gif'];
+}
+if( f=='3.gif' || f=='4.gif'){
+	return ['3.gif','4.gif'];
+}
+if( f=='5.gif' || f=='6.gif'){
+	return ['5.gif','6.gif'];
+}
+if( f=='7.gif' || f=='8.gif'){
+	return ['7.gif','8.gif'];
+}
+return [f,f];
+}
+
+function show(id){
+get('d' + id).style.display='block';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][1];
+get('img' + id ).src= path + icon(get('img' + id ).src)[1];
+
+}
+
+function collapse(id){
+get('d' + id ).style.display='none';
+if(get('imgn' + id )) get('imgn' + id ).src= path + pn[pnImg(get('imgn' + id ).src)][0];
+get('img' + id ).src= path + icon(get('img' + id ).src)[0];
+
+}
+
+function collapseAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='none'){ 
+			collapse(divlist[i]);
+		}
+	}
+}
+}
+
+function showAll(){
+var i;
+var o;
+for(i=0;i<=divlist.length-1;i++){
+	if(o=get('d' + divlist[i])){
+		if(o.style.display!='block'){ 
+			show(divlist[i]);
+		}
+	}
+}
+}
+
+function unselectAll(){
+var i=0;
+while(get("l" + i)){
+	get("l" + i).className = "unselected";
+	i++;
+}
+}
+
+function clickNode(index){
+var e;
+
+e = get("l" + index);
+if(e==null) return;
+e = e.parentNode;
+if(e.nodeName == 'A'){
+	if(e.href!= window.location.href + '#'){
+		parent.parent.content.location.href = e.href;
+	}else{
+		selectNode(index);
+	}
+	e.onclick;
+}
+}
+
+function showParent(ele){
+var e;
+e = ele.parentNode;
+
+if(e==null) return;
+
+if(e.nodeName == 'DIV'){
+	if(e.id!='') show(e.id.substring(1,e.id.length ));
+}else if(e.nodeName == 'A'){
+
+}
+showParent(e);
+}
+
+function showNode(index){
+showParent(get("l" + index));
+LinkClick(index);
+}
+
+function selectNode(index){
+if(LastSelected!=index){
+//collapseAll();
+showParent(get("l" + index));
+LinkClick(index);
+get('l' + index).scrollIntoView(true);
+
+
+//alert(get('l' + index).offsetHeight + '|' + document.body.clientHeight + '|' + document.body.offsetHeight);
+window.scrollTo(0,document.body.scrollTop); // - document.body.clientHeight /3);
+}
+}
+
+
+function NodeClick(id){
+if(get('d' + id ).style.display=='none'){
+	show(id);
+}else{
+	collapse(id);
+}
+return false;
+}
+
+function LinkDblClick(id){
+if(!AutoCollapse){
+	if(get('d' + id ).style.display=='none'){
+		show(id);
+	}else{
+		collapse(id);
+	}
+}
+return false;
+}
+
+function LinkClick(index,hasChild,r){
+if(AutoCollapse && hasChild){
+	if(get('d' + index ).style.display=='none'){
+		collapseAll()
+		showParent(get('l' + index));
+		show(index);
+	}else{
+		collapseAll()
+		showParent(get('l' + index));	
+		collapse(index);
+	}
+}
+if(LastSelected!=-1){
+	get('l' + LastSelected).className = "unselected";
+}
+get('l' + index).className = "selected";
+LastSelected = index;
+return r;
+}
+
+function body_onmousemove(event){
+if(typeof(document.body.scrollTop)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scroll(0,document.body.scrollTop);}}
+if(typeof(window.scrollY)!='undefined'){
+if(parseInt(event.clientX)<5){
+window.scrollTo(0,window.scrollY);}}
+}
+
+window.defaultStatus = '';
+
+function body_onload(){
+get('loading').style.display='none';
+loaded = true;
+if(parent.parent.content.document.readyState){
+	if(parent.parent.content.document.readyState == 'complete'){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}else{
+	if(parent.parent.contentLoaded){
+		try{parent.parent.content.syn();}catch(e){};
+	}
+}
+}
+
+//-->
+</SCRIPT>
+<script language="JavaScript" src="languages.js"></script>
+</head>
+
+<body bgcolor="#FFFFFF" onmousemove="body_onmousemove(event);" onload="body_onload();">
+<div id="loading"><font color="#FF0000" size="1"> Loading table of contents... 
+</font><br><br></div>
+<script>SetEnv(0,false)</script><div><nobr><img src="icons/downangle.gif" class="p"><a href="pages/contents-page.html" onclick="return LinkClick('0',false,true)" target="content" title="CONTENTS PAGE" onmousemove="window.status='CONTENTS PAGE'"><img src="icons/11.gif" class="p"> <span id="l0" class="unselected">CONTENTS PAGE</span></a></nobr></div>
+<div><nobr><a href="#" onClick="return NodeClick('1')"><img id="imgn1" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('1',true,false)" onDblClick="return LinkDblClick('1')" target="content" title="WEB APPLICATION PROCESS" onmousemove="window.status='WEB APPLICATION PROCESS'"><img id="img1" src="icons/1.gif" class="p"> <span id="l1" class="unselected">WEB APPLICATION PROCESS</span></a></nobr></div>
+<div id="d1" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('2')"><img id="imgn2" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('2',true,false)" onDblClick="return LinkDblClick('2')" target="content" title="Administration" onmousemove="window.status='Administration'"><img id="img2" src="icons/1.gif" class="p"> <span id="l2" class="unselected">Administration</span></a></nobr></div>
+<div id="d2" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('3')"><img id="imgn3" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('3',true,false)" onDblClick="return LinkDblClick('3')" target="content" title="Registration process" onmousemove="window.status='Registration process'"><img id="img3" src="icons/1.gif" class="p"> <span id="l3" class="unselected">Registration process</span></a></nobr></div>
+<div id="d3" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('4',false,true)" target="content" title="Register a new user process" onmousemove="window.status='Register a new user process'"><img src="icons/11.gif" class="p"> <span id="l4" class="unselected">Register a new user process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('5')"><img id="imgn5" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('5',true,false)" onDblClick="return LinkDblClick('5')" target="content" title="Login process" onmousemove="window.status='Login process'"><img id="img5" src="icons/1.gif" class="p"> <span id="l5" class="unselected">Login process</span></a></nobr></div>
+<div id="d5" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/login-user-process.html" onclick="return LinkClick('6',false,true)" target="content" title="Login user process" onmousemove="window.status='Login user process'"><img src="icons/11.gif" class="p"> <span id="l6" class="unselected">Login user process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('7')"><img id="imgn7" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('7',true,false)" onDblClick="return LinkDblClick('7')" target="content" title="Logout process" onmousemove="window.status='Logout process'"><img id="img7" src="icons/1.gif" class="p"> <span id="l7" class="unselected">Logout process</span></a></nobr></div>
+<div id="d7" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/logout-user-process.html" onclick="return LinkClick('8',false,true)" target="content" title="Logout user process" onmousemove="window.status='Logout user process'"><img src="icons/11.gif" class="p"> <span id="l8" class="unselected">Logout user process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('9')"><img id="imgn9" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('9',true,false)" onDblClick="return LinkDblClick('9')" target="content" title="Modify User Role process" onmousemove="window.status='Modify User Role process'"><img id="img9" src="icons/1.gif" class="p"> <span id="l9" class="unselected">Modify User Role process</span></a></nobr></div>
+<div id="d9" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/modify-user-role-process1.html" onclick="return LinkClick('10',false,true)" target="content" title="Modify user role process" onmousemove="window.status='Modify user role process'"><img src="icons/11.gif" class="p"> <span id="l10" class="unselected">Modify user role process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('11')"><img id="imgn11" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('11',true,false)" onDblClick="return LinkDblClick('11')" target="content" title="Search User Role process" onmousemove="window.status='Search User Role process'"><img id="img11" src="icons/1.gif" class="p"> <span id="l11" class="unselected">Search User Role process</span></a></nobr></div>
+<div id="d11" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-user-role-process1.html" onclick="return LinkClick('12',false,true)" target="content" title="Search user role process" onmousemove="window.status='Search user role process'"><img src="icons/11.gif" class="p"> <span id="l12" class="unselected">Search user role process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('13')"><img id="imgn13" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('13',true,false)" onDblClick="return LinkDblClick('13')" target="content" title="Add User Role process" onmousemove="window.status='Add User Role process'"><img id="img13" src="icons/1.gif" class="p"> <span id="l13" class="unselected">Add User Role process</span></a></nobr></div>
+<div id="d13" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/add-user-role-process1.html" onclick="return LinkClick('14',false,true)" target="content" title="Add user role process" onmousemove="window.status='Add user role process'"><img src="icons/11.gif" class="p"> <span id="l14" class="unselected">Add user role process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('15')"><img id="imgn15" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('15',true,false)" onDblClick="return LinkDblClick('15')" target="content" title="Reset password process" onmousemove="window.status='Reset password process'"><img id="img15" src="icons/1.gif" class="p"> <span id="l15" class="unselected">Reset password process</span></a></nobr></div>
+<div id="d15" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/reset-password-process1.html" onclick="return LinkClick('16',false,true)" target="content" title="Reset Password process" onmousemove="window.status='Reset Password process'"><img src="icons/11.gif" class="p"> <span id="l16" class="unselected">Reset Password process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('17')"><img id="imgn17" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('17',true,false)" onDblClick="return LinkDblClick('17')" target="content" title="Search Audit Trail process" onmousemove="window.status='Search Audit Trail process'"><img id="img17" src="icons/1.gif" class="p"> <span id="l17" class="unselected">Search Audit Trail process</span></a></nobr></div>
+<div id="d17" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-audit-trail-process1.html" onclick="return LinkClick('18',false,true)" target="content" title="Search Audit Trail process" onmousemove="window.status='Search Audit Trail process'"><img src="icons/11.gif" class="p"> <span id="l18" class="unselected">Search Audit Trail process</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('19')"><img id="imgn19" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('19',true,false)" onDblClick="return LinkDblClick('19')" target="content" title="Clients" onmousemove="window.status='Clients'"><img id="img19" src="icons/1.gif" class="p"> <span id="l19" class="unselected">Clients</span></a></nobr></div>
+<div id="d19" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('20')"><img id="imgn20" src="icons/tplus.gif" class="p"></a><a href="pages/adding-of-a-client-process.html" onclick="return LinkClick('20',true,true)" onDblClick="return LinkDblClick('20')" target="content" title="Adding of a Client process" onmousemove="window.status='Adding of a Client process'"><img id="img20" src="icons/1.gif" class="p"> <span id="l20" class="unselected">Adding of a Client process</span></a></nobr></div>
+<div id="d20" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/add-a-new-contact-item-process.html" onclick="return LinkClick('21',false,true)" target="content" title="Add a new Contact item process" onmousemove="window.status='Add a new Contact item process'"><img src="icons/11.gif" class="p"> <span id="l21" class="unselected">Add a new Contact item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('22')"><img id="imgn22" src="icons/tplus.gif" class="p"></a><a href="pages/modify-of-a-client-process.html" onclick="return LinkClick('22',true,true)" onDblClick="return LinkDblClick('22')" target="content" title="Modify of a Client process" onmousemove="window.status='Modify of a Client process'"><img id="img22" src="icons/1.gif" class="p"> <span id="l22" class="unselected">Modify of a Client process</span></a></nobr></div>
+<div id="d22" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-a-contact-item-process.html" onclick="return LinkClick('23',false,true)" target="content" title="Update a Contact item process" onmousemove="window.status='Update a Contact item process'"><img src="icons/11.gif" class="p"> <span id="l23" class="unselected">Update a Contact item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/searching-of-a-client-process.html" onclick="return LinkClick('24',false,true)" target="content" title="Searching of a Client process" onmousemove="window.status='Searching of a Client process'"><img src="icons/11.gif" class="p"> <span id="l24" class="unselected">Searching of a Client process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('25')"><img id="imgn25" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('25',true,false)" onDblClick="return LinkDblClick('25')" target="content" title="Job Bag" onmousemove="window.status='Job Bag'"><img id="img25" src="icons/1.gif" class="p"> <span id="l25" class="unselected">Job Bag</span></a></nobr></div>
+<div id="d25" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/create-job-bag-process.html" onclick="return LinkClick('26',false,true)" target="content" title="Create Job Bag process" onmousemove="window.status='Create Job Bag process'"><img src="icons/11.gif" class="p"> <span id="l26" class="unselected">Create Job Bag process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/modify-a-job-bag-process.html" onclick="return LinkClick('27',false,true)" target="content" title="Modify a Job Bag process" onmousemove="window.status='Modify a Job Bag process'"><img src="icons/11.gif" class="p"> <span id="l27" class="unselected">Modify a Job Bag process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('28',false,true)" target="content" title="Search Job Bag process" onmousemove="window.status='Search Job Bag process'"><img src="icons/11.gif" class="p"> <span id="l28" class="unselected">Search Job Bag process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/delete-job-bag-process.html" onclick="return LinkClick('29',false,true)" target="content" title="Delete Job Bag process" onmousemove="window.status='Delete Job Bag process'"><img src="icons/11.gif" class="p"> <span id="l29" class="unselected">Delete Job Bag process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/capture-payment-documentation-process.html" onclick="return LinkClick('30',false,true)" target="content" title="Capture Payment Documentation process" onmousemove="window.status='Capture Payment Documentation process'"><img src="icons/11.gif" class="p"> <span id="l30" class="unselected">Capture Payment Documentation process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/complete-bag-process.html" onclick="return LinkClick('31',false,true)" target="content" title="Complete Bag process" onmousemove="window.status='Complete Bag process'"><img src="icons/11.gif" class="p"> <span id="l31" class="unselected">Complete Bag process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('32')"><img id="imgn32" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('32',true,false)" onDblClick="return LinkDblClick('32')" target="content" title="Client Order" onmousemove="window.status='Client Order'"><img id="img32" src="icons/1.gif" class="p"> <span id="l32" class="unselected">Client Order</span></a></nobr></div>
+<div id="d32" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/create-client-order.html" onclick="return LinkClick('33',false,true)" target="content" title="Create Client Order  " onmousemove="window.status='Create Client Order  '"><img src="icons/11.gif" class="p"> <span id="l33" class="unselected">Create Client Order  </span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-client-order.html" onclick="return LinkClick('34',false,true)" target="content" title="Search Client Order" onmousemove="window.status='Search Client Order'"><img src="icons/11.gif" class="p"> <span id="l34" class="unselected">Search Client Order</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/modify-client-order.html" onclick="return LinkClick('35',false,true)" target="content" title="Modify Client Order" onmousemove="window.status='Modify Client Order'"><img src="icons/11.gif" class="p"> <span id="l35" class="unselected">Modify Client Order</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-client-order-documentation.html" onclick="return LinkClick('36',false,true)" target="content" title="Add Client Order documentation" onmousemove="window.status='Add Client Order documentation'"><img src="icons/11.gif" class="p"> <span id="l36" class="unselected">Add Client Order documentation</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-service-to-client-order-process.html" onclick="return LinkClick('37',false,true)" target="content" title="Add Service to Client Order process" onmousemove="window.status='Add Service to Client Order process'"><img src="icons/11.gif" class="p"> <span id="l37" class="unselected">Add Service to Client Order process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-service-from-client-order-process.html" onclick="return LinkClick('38',false,true)" target="content" title="Remove Service from Client Order process" onmousemove="window.status='Remove Service from Client Order process'"><img src="icons/11.gif" class="p"> <span id="l38" class="unselected">Remove Service from Client Order process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('39',false,true)" target="content" title="Add Catering to Client Order process" onmousemove="window.status='Add Catering to Client Order process'"><img src="icons/11.gif" class="p"> <span id="l39" class="unselected">Add Catering to Client Order process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('40',false,true)" target="content" title="Remove Catering from Client Order process" onmousemove="window.status='Remove Catering from Client Order process'"><img src="icons/11.gif" class="p"> <span id="l40" class="unselected">Remove Catering from Client Order process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-promotional-item-to-client-order-process.html" onclick="return LinkClick('41',false,true)" target="content" title="Add Promotional Item to Client Order process" onmousemove="window.status='Add Promotional Item to Client Order process'"><img src="icons/11.gif" class="p"> <span id="l41" class="unselected">Add Promotional Item to Client Order process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/remove-promotional-item-from-client-order-process.html" onclick="return LinkClick('42',false,true)" target="content" title="Remove Promotional Item from Client Order process" onmousemove="window.status='Remove Promotional Item from Client Order process'"><img src="icons/11.gif" class="p"> <span id="l42" class="unselected">Remove Promotional Item from Client Order process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('43')"><img id="imgn43" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('43',true,false)" onDblClick="return LinkDblClick('43')" target="content" title="Schedule" onmousemove="window.status='Schedule'"><img id="img43" src="icons/1.gif" class="p"> <span id="l43" class="unselected">Schedule</span></a></nobr></div>
+<div id="d43" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-schedule-event-process.html" onclick="return LinkClick('44',false,true)" target="content" title="Add a new Schedule Event process" onmousemove="window.status='Add a new Schedule Event process'"><img src="icons/11.gif" class="p"> <span id="l44" class="unselected">Add a new Schedule Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/modify-schedule-event-process.html" onclick="return LinkClick('45',false,true)" target="content" title="Modify schedule event process" onmousemove="window.status='Modify schedule event process'"><img src="icons/11.gif" class="p"> <span id="l45" class="unselected">Modify schedule event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/view-agenda-process.html" onclick="return LinkClick('46',false,true)" target="content" title="View Agenda process" onmousemove="window.status='View Agenda process'"><img src="icons/11.gif" class="p"> <span id="l46" class="unselected">View Agenda process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('47',false,true)" target="content" title="Delete schedule event process" onmousemove="window.status='Delete schedule event process'"><img src="icons/11.gif" class="p"> <span id="l47" class="unselected">Delete schedule event process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('48')"><img id="imgn48" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('48',true,false)" onDblClick="return LinkDblClick('48')" target="content" title="Event" onmousemove="window.status='Event'"><img id="img48" src="icons/1.gif" class="p"> <span id="l48" class="unselected">Event</span></a></nobr></div>
+<div id="d48" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/create-event.html" onclick="return LinkClick('49',false,true)" target="content" title="Create Event" onmousemove="window.status='Create Event'"><img src="icons/11.gif" class="p"> <span id="l49" class="unselected">Create Event</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-event.html" onclick="return LinkClick('50',false,true)" target="content" title="Search Event" onmousemove="window.status='Search Event'"><img src="icons/11.gif" class="p"> <span id="l50" class="unselected">Search Event</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/modify-event.html" onclick="return LinkClick('51',false,true)" target="content" title="Modify Event" onmousemove="window.status='Modify Event'"><img src="icons/11.gif" class="p"> <span id="l51" class="unselected">Modify Event</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/create-event-agenda.html" onclick="return LinkClick('52',false,true)" target="content" title="Create Event Agenda" onmousemove="window.status='Create Event Agenda'"><img src="icons/11.gif" class="p"> <span id="l52" class="unselected">Create Event Agenda</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/modify-event-agenda.html" onclick="return LinkClick('53',false,true)" target="content" title="Modify Event Agenda" onmousemove="window.status='Modify Event Agenda'"><img src="icons/11.gif" class="p"> <span id="l53" class="unselected">Modify Event Agenda</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/rsvp-information.html" onclick="return LinkClick('54',false,true)" target="content" title="RSVP Information" onmousemove="window.status='RSVP Information'"><img src="icons/11.gif" class="p"> <span id="l54" class="unselected">RSVP Information</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/capture-client-feedback.html" onclick="return LinkClick('55',false,true)" target="content" title="Capture Client feedback" onmousemove="window.status='Capture Client feedback'"><img src="icons/11.gif" class="p"> <span id="l55" class="unselected">Capture Client feedback</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/maintain-event-checklist.html" onclick="return LinkClick('56',false,true)" target="content" title="Maintain Event Checklist" onmousemove="window.status='Maintain Event Checklist'"><img src="icons/11.gif" class="p"> <span id="l56" class="unselected">Maintain Event Checklist</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('57',false,true)" target="content" title="Add Event documentation" onmousemove="window.status='Add Event documentation'"><img src="icons/11.gif" class="p"> <span id="l57" class="unselected">Add Event documentation</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-service-to-event-process.html" onclick="return LinkClick('58',false,true)" target="content" title="Add Service to Event process" onmousemove="window.status='Add Service to Event process'"><img src="icons/11.gif" class="p"> <span id="l58" class="unselected">Add Service to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-service-from-event-process.html" onclick="return LinkClick('59',false,true)" target="content" title="Remove Service from Event process" onmousemove="window.status='Remove Service from Event process'"><img src="icons/11.gif" class="p"> <span id="l59" class="unselected">Remove Service from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-activity-to-event-process.html" onclick="return LinkClick('60',false,true)" target="content" title="Add Activity to Event process" onmousemove="window.status='Add Activity to Event process'"><img src="icons/11.gif" class="p"> <span id="l60" class="unselected">Add Activity to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-activity-from-event-process.html" onclick="return LinkClick('61',false,true)" target="content" title="Remove Activity from Event process" onmousemove="window.status='Remove Activity from Event process'"><img src="icons/11.gif" class="p"> <span id="l61" class="unselected">Remove Activity from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-accommodation-to-event-process.html" onclick="return LinkClick('62',false,true)" target="content" title="Add Accommodation to Event process" onmousemove="window.status='Add Accommodation to Event process'"><img src="icons/11.gif" class="p"> <span id="l62" class="unselected">Add Accommodation to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-accommodation-from-event-process.html" onclick="return LinkClick('63',false,true)" target="content" title="Remove Accommodation from Event process" onmousemove="window.status='Remove Accommodation from Event process'"><img src="icons/11.gif" class="p"> <span id="l63" class="unselected">Remove Accommodation from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-travel-to-event-process.html" onclick="return LinkClick('64',false,true)" target="content" title="Add Travel to Event process" onmousemove="window.status='Add Travel to Event process'"><img src="icons/11.gif" class="p"> <span id="l64" class="unselected">Add Travel to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-travel-from-event-process.html" onclick="return LinkClick('65',false,true)" target="content" title="Remove Travel from Event process" onmousemove="window.status='Remove Travel from Event process'"><img src="icons/11.gif" class="p"> <span id="l65" class="unselected">Remove Travel from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-decoration-to-event-process.html" onclick="return LinkClick('66',false,true)" target="content" title="Add Decoration to Event process" onmousemove="window.status='Add Decoration to Event process'"><img src="icons/11.gif" class="p"> <span id="l66" class="unselected">Add Decoration to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-decoration-from-event-process.html" onclick="return LinkClick('67',false,true)" target="content" title="Remove Decoration from Event process" onmousemove="window.status='Remove Decoration from Event process'"><img src="icons/11.gif" class="p"> <span id="l67" class="unselected">Remove Decoration from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-catering-to-event-process.html" onclick="return LinkClick('68',false,true)" target="content" title="Add Catering to Event process" onmousemove="window.status='Add Catering to Event process'"><img src="icons/11.gif" class="p"> <span id="l68" class="unselected">Add Catering to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-catering-from-event-process.html" onclick="return LinkClick('69',false,true)" target="content" title="Remove Catering from Event process" onmousemove="window.status='Remove Catering from Event process'"><img src="icons/11.gif" class="p"> <span id="l69" class="unselected">Remove Catering from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-entertainment-to-event-process.html" onclick="return LinkClick('70',false,true)" target="content" title="Add Entertainment to Event process" onmousemove="window.status='Add Entertainment to Event process'"><img src="icons/11.gif" class="p"> <span id="l70" class="unselected">Add Entertainment to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/remove-entertainment-from-event-process.html" onclick="return LinkClick('71',false,true)" target="content" title="Remove Entertainment from Event process" onmousemove="window.status='Remove Entertainment from Event process'"><img src="icons/11.gif" class="p"> <span id="l71" class="unselected">Remove Entertainment from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-promotional-item-to-event-process.html" onclick="return LinkClick('72',false,true)" target="content" title="Add Promotional Item to Event process" onmousemove="window.status='Add Promotional Item to Event process'"><img src="icons/11.gif" class="p"> <span id="l72" class="unselected">Add Promotional Item to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('73',false,true)" target="content" title="Remove Promotional Item from Event process" onmousemove="window.status='Remove Promotional Item from Event process'"><img src="icons/11.gif" class="p"> <span id="l73" class="unselected">Remove Promotional Item from Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-venue-to-event-process.html" onclick="return LinkClick('74',false,true)" target="content" title="Add Venue to Event process" onmousemove="window.status='Add Venue to Event process'"><img src="icons/11.gif" class="p"> <span id="l74" class="unselected">Add Venue to Event process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/remove-venue-from-event-process.html" onclick="return LinkClick('75',false,true)" target="content" title="Remove Venue from Event process" onmousemove="window.status='Remove Venue from Event process'"><img src="icons/11.gif" class="p"> <span id="l75" class="unselected">Remove Venue from Event process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('76')"><img id="imgn76" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('76',true,false)" onDblClick="return LinkDblClick('76')" target="content" title="Category items processes" onmousemove="window.status='Category items processes'"><img id="img76" src="icons/1.gif" class="p"> <span id="l76" class="unselected">Category items processes</span></a></nobr></div>
+<div id="d76" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('77')"><img id="imgn77" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('77',true,false)" onDblClick="return LinkDblClick('77')" target="content" title="Service" onmousemove="window.status='Service'"><img id="img77" src="icons/1.gif" class="p"> <span id="l77" class="unselected">Service</span></a></nobr></div>
+<div id="d77" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-service-item-process.html" onclick="return LinkClick('78',false,true)" target="content" title="Add a new Service item process" onmousemove="window.status='Add a new Service item process'"><img src="icons/11.gif" class="p"> <span id="l78" class="unselected">Add a new Service item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-a-service-item-process.html" onclick="return LinkClick('79',false,true)" target="content" title="Update a Service item process" onmousemove="window.status='Update a Service item process'"><img src="icons/11.gif" class="p"> <span id="l79" class="unselected">Update a Service item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('80',false,true)" target="content" title="Search a Service item process" onmousemove="window.status='Search a Service item process'"><img src="icons/11.gif" class="p"> <span id="l80" class="unselected">Search a Service item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-a-service-item-process.html" onclick="return LinkClick('81',false,true)" target="content" title="Delete a Service item process" onmousemove="window.status='Delete a Service item process'"><img src="icons/11.gif" class="p"> <span id="l81" class="unselected">Delete a Service item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('82')"><img id="imgn82" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('82',true,false)" onDblClick="return LinkDblClick('82')" target="content" title="Activity" onmousemove="window.status='Activity'"><img id="img82" src="icons/1.gif" class="p"> <span id="l82" class="unselected">Activity</span></a></nobr></div>
+<div id="d82" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('83',false,true)" target="content" title="Add a new Activity item process" onmousemove="window.status='Add a new Activity item process'"><img src="icons/11.gif" class="p"> <span id="l83" class="unselected">Add a new Activity item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-an-activity-item-process.html" onclick="return LinkClick('84',false,true)" target="content" title="Update an Activity item process" onmousemove="window.status='Update an Activity item process'"><img src="icons/11.gif" class="p"> <span id="l84" class="unselected">Update an Activity item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-an-activity-item-process.html" onclick="return LinkClick('85',false,true)" target="content" title="Search an Activity item process" onmousemove="window.status='Search an Activity item process'"><img src="icons/11.gif" class="p"> <span id="l85" class="unselected">Search an Activity item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-an-activity-item-process.html" onclick="return LinkClick('86',false,true)" target="content" title="Delete an Activity item process" onmousemove="window.status='Delete an Activity item process'"><img src="icons/11.gif" class="p"> <span id="l86" class="unselected">Delete an Activity item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('87')"><img id="imgn87" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('87',true,false)" onDblClick="return LinkDblClick('87')" target="content" title="Accommodation" onmousemove="window.status='Accommodation'"><img id="img87" src="icons/1.gif" class="p"> <span id="l87" class="unselected">Accommodation</span></a></nobr></div>
+<div id="d87" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-accommodation-item-process.html" onclick="return LinkClick('88',false,true)" target="content" title="Add a new Accommodation item process" onmousemove="window.status='Add a new Accommodation item process'"><img src="icons/11.gif" class="p"> <span id="l88" class="unselected">Add a new Accommodation item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('89',false,true)" target="content" title="Update an Accommodation item process" onmousemove="window.status='Update an Accommodation item process'"><img src="icons/11.gif" class="p"> <span id="l89" class="unselected">Update an Accommodation item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-an-accommodation-item-process.html" onclick="return LinkClick('90',false,true)" target="content" title="Search an Accommodation item process" onmousemove="window.status='Search an Accommodation item process'"><img src="icons/11.gif" class="p"> <span id="l90" class="unselected">Search an Accommodation item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-an-accommodation-item-process.html" onclick="return LinkClick('91',false,true)" target="content" title="Delete an Accommodation item process" onmousemove="window.status='Delete an Accommodation item process'"><img src="icons/11.gif" class="p"> <span id="l91" class="unselected">Delete an Accommodation item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('92')"><img id="imgn92" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('92',true,false)" onDblClick="return LinkDblClick('92')" target="content" title="Travel" onmousemove="window.status='Travel'"><img id="img92" src="icons/1.gif" class="p"> <span id="l92" class="unselected">Travel</span></a></nobr></div>
+<div id="d92" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-travel-item-process.html" onclick="return LinkClick('93',false,true)" target="content" title="Add a new Travel item process" onmousemove="window.status='Add a new Travel item process'"><img src="icons/11.gif" class="p"> <span id="l93" class="unselected">Add a new Travel item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('94',false,true)" target="content" title="Update a Travel item process" onmousemove="window.status='Update a Travel item process'"><img src="icons/11.gif" class="p"> <span id="l94" class="unselected">Update a Travel item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-a-travel-item-process.html" onclick="return LinkClick('95',false,true)" target="content" title="Search a Travel item process" onmousemove="window.status='Search a Travel item process'"><img src="icons/11.gif" class="p"> <span id="l95" class="unselected">Search a Travel item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('96',false,true)" target="content" title="Delete a Travel item process" onmousemove="window.status='Delete a Travel item process'"><img src="icons/11.gif" class="p"> <span id="l96" class="unselected">Delete a Travel item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('97')"><img id="imgn97" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('97',true,false)" onDblClick="return LinkDblClick('97')" target="content" title="Catering" onmousemove="window.status='Catering'"><img id="img97" src="icons/1.gif" class="p"> <span id="l97" class="unselected">Catering</span></a></nobr></div>
+<div id="d97" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-catering-item-process.html" onclick="return LinkClick('98',false,true)" target="content" title="Add a new Catering item process" onmousemove="window.status='Add a new Catering item process'"><img src="icons/11.gif" class="p"> <span id="l98" class="unselected">Add a new Catering item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('99',false,true)" target="content" title="Update a Catering item process" onmousemove="window.status='Update a Catering item process'"><img src="icons/11.gif" class="p"> <span id="l99" class="unselected">Update a Catering item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-a-catering-item-process.html" onclick="return LinkClick('100',false,true)" target="content" title="Search a Catering item process" onmousemove="window.status='Search a Catering item process'"><img src="icons/11.gif" class="p"> <span id="l100" class="unselected">Search a Catering item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-a-catering-item-process.html" onclick="return LinkClick('101',false,true)" target="content" title="Delete a Catering item process" onmousemove="window.status='Delete a Catering item process'"><img src="icons/11.gif" class="p"> <span id="l101" class="unselected">Delete a Catering item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('102')"><img id="imgn102" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('102',true,false)" onDblClick="return LinkDblClick('102')" target="content" title="Decoration" onmousemove="window.status='Decoration'"><img id="img102" src="icons/1.gif" class="p"> <span id="l102" class="unselected">Decoration</span></a></nobr></div>
+<div id="d102" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-decoration-item-process.html" onclick="return LinkClick('103',false,true)" target="content" title="Add a new Decoration item process" onmousemove="window.status='Add a new Decoration item process'"><img src="icons/11.gif" class="p"> <span id="l103" class="unselected">Add a new Decoration item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-a-decoration-item-process.html" onclick="return LinkClick('104',false,true)" target="content" title="Update a Decoration item process" onmousemove="window.status='Update a Decoration item process'"><img src="icons/11.gif" class="p"> <span id="l104" class="unselected">Update a Decoration item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-a-decoration-item-process.html" onclick="return LinkClick('105',false,true)" target="content" title="Search a Decoration item process" onmousemove="window.status='Search a Decoration item process'"><img src="icons/11.gif" class="p"> <span id="l105" class="unselected">Search a Decoration item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-a-decoration-item-process.html" onclick="return LinkClick('106',false,true)" target="content" title="Delete a Decoration item process" onmousemove="window.status='Delete a Decoration item process'"><img src="icons/11.gif" class="p"> <span id="l106" class="unselected">Delete a Decoration item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('107')"><img id="imgn107" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('107',true,false)" onDblClick="return LinkDblClick('107')" target="content" title="Entertainment" onmousemove="window.status='Entertainment'"><img id="img107" src="icons/1.gif" class="p"> <span id="l107" class="unselected">Entertainment</span></a></nobr></div>
+<div id="d107" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('108',false,true)" target="content" title="Add a new Entertainment item process" onmousemove="window.status='Add a new Entertainment item process'"><img src="icons/11.gif" class="p"> <span id="l108" class="unselected">Add a new Entertainment item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-an-entertainment-item-process.html" onclick="return LinkClick('109',false,true)" target="content" title="Update an Entertainment item process" onmousemove="window.status='Update an Entertainment item process'"><img src="icons/11.gif" class="p"> <span id="l109" class="unselected">Update an Entertainment item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-an-entertainment-item-process.html" onclick="return LinkClick('110',false,true)" target="content" title="Search an Entertainment item process" onmousemove="window.status='Search an Entertainment item process'"><img src="icons/11.gif" class="p"> <span id="l110" class="unselected">Search an Entertainment item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-an-entertainment-item-process.html" onclick="return LinkClick('111',false,true)" target="content" title="Delete an Entertainment item process" onmousemove="window.status='Delete an Entertainment item process'"><img src="icons/11.gif" class="p"> <span id="l111" class="unselected">Delete an Entertainment item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('112')"><img id="imgn112" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('112',true,false)" onDblClick="return LinkDblClick('112')" target="content" title="Promotional Items" onmousemove="window.status='Promotional Items'"><img id="img112" src="icons/1.gif" class="p"> <span id="l112" class="unselected">Promotional Items</span></a></nobr></div>
+<div id="d112" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-promotional-item-process.html" onclick="return LinkClick('113',false,true)" target="content" title="Add a new Promotional item process" onmousemove="window.status='Add a new Promotional item process'"><img src="icons/11.gif" class="p"> <span id="l113" class="unselected">Add a new Promotional item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-a-promotional-item-process.html" onclick="return LinkClick('114',false,true)" target="content" title="Update a Promotional item process" onmousemove="window.status='Update a Promotional item process'"><img src="icons/11.gif" class="p"> <span id="l114" class="unselected">Update a Promotional item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-a-promotional-item-process.html" onclick="return LinkClick('115',false,true)" target="content" title="Search a Promotional item process" onmousemove="window.status='Search a Promotional item process'"><img src="icons/11.gif" class="p"> <span id="l115" class="unselected">Search a Promotional item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-a-promotional-item-process.html" onclick="return LinkClick('116',false,true)" target="content" title="Delete a Promotional item process" onmousemove="window.status='Delete a Promotional item process'"><img src="icons/11.gif" class="p"> <span id="l116" class="unselected">Delete a Promotional item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('117')"><img id="imgn117" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('117',true,false)" onDblClick="return LinkDblClick('117')" target="content" title="Venue" onmousemove="window.status='Venue'"><img id="img117" src="icons/1.gif" class="p"> <span id="l117" class="unselected">Venue</span></a></nobr></div>
+<div id="d117" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-venue-item-process.html" onclick="return LinkClick('118',false,true)" target="content" title="Add a new Venue item process" onmousemove="window.status='Add a new Venue item process'"><img src="icons/11.gif" class="p"> <span id="l118" class="unselected">Add a new Venue item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-a-venue-item-process.html" onclick="return LinkClick('119',false,true)" target="content" title="Update a Venue item process" onmousemove="window.status='Update a Venue item process'"><img src="icons/11.gif" class="p"> <span id="l119" class="unselected">Update a Venue item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/search-a-venue-item-process.html" onclick="return LinkClick('120',false,true)" target="content" title="Search a Venue item process" onmousemove="window.status='Search a Venue item process'"><img src="icons/11.gif" class="p"> <span id="l120" class="unselected">Search a Venue item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-a-venue-item-process.html" onclick="return LinkClick('121',false,true)" target="content" title="Delete a Venue item process" onmousemove="window.status='Delete a Venue item process'"><img src="icons/11.gif" class="p"> <span id="l121" class="unselected">Delete a Venue item process</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('122')"><img id="imgn122" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('122',true,false)" onDblClick="return LinkDblClick('122')" target="content" title="Suppliers" onmousemove="window.status='Suppliers'"><img id="img122" src="icons/1.gif" class="p"> <span id="l122" class="unselected">Suppliers</span></a></nobr></div>
+<div id="d122" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('123')"><img id="imgn123" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('123',true,false)" onDblClick="return LinkDblClick('123')" target="content" title="Adding of a Supplier" onmousemove="window.status='Adding of a Supplier'"><img id="img123" src="icons/1.gif" class="p"> <span id="l123" class="unselected">Adding of a Supplier</span></a></nobr></div>
+<div id="d123" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/add-a-new-supplier-item-process.html" onclick="return LinkClick('124',false,true)" target="content" title="Add a new Supplier item process" onmousemove="window.status='Add a new Supplier item process'"><img src="icons/11.gif" class="p"> <span id="l124" class="unselected">Add a new Supplier item process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/add-a-new-contact-item-process1.html" onclick="return LinkClick('125',false,true)" target="content" title="Add a new Contact item process" onmousemove="window.status='Add a new Contact item process'"><img src="icons/11.gif" class="p"> <span id="l125" class="unselected">Add a new Contact item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('126')"><img id="imgn126" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('126',true,false)" onDblClick="return LinkDblClick('126')" target="content" title="Update of a Supplier" onmousemove="window.status='Update of a Supplier'"><img id="img126" src="icons/1.gif" class="p"> <span id="l126" class="unselected">Update of a Supplier</span></a></nobr></div>
+<div id="d126" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/update-a-supplier-process.html" onclick="return LinkClick('127',false,true)" target="content" title="Update a Supplier process" onmousemove="window.status='Update a Supplier process'"><img src="icons/11.gif" class="p"> <span id="l127" class="unselected">Update a Supplier process</span></a></nobr></div>
+<div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/update-a-contact-item-process1.html" onclick="return LinkClick('128',false,true)" target="content" title="Update a Contact item process" onmousemove="window.status='Update a Contact item process'"><img src="icons/11.gif" class="p"> <span id="l128" class="unselected">Update a Contact item process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('129')"><img id="imgn129" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('129',true,false)" onDblClick="return LinkDblClick('129')" target="content" title="Search of a Supplier" onmousemove="window.status='Search of a Supplier'"><img id="img129" src="icons/1.gif" class="p"> <span id="l129" class="unselected">Search of a Supplier</span></a></nobr></div>
+<div id="d129" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-a-supplier-process.html" onclick="return LinkClick('130',false,true)" target="content" title="Search a Supplier process" onmousemove="window.status='Search a Supplier process'"><img src="icons/11.gif" class="p"> <span id="l130" class="unselected">Search a Supplier process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('131')"><img id="imgn131" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('131',true,false)" onDblClick="return LinkDblClick('131')" target="content" title="Delete of a Supplier Contact" onmousemove="window.status='Delete of a Supplier Contact'"><img id="img131" src="icons/1.gif" class="p"> <span id="l131" class="unselected">Delete of a Supplier Contact</span></a></nobr></div>
+<div id="d131" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/delete-a-contact-item-process.html" onclick="return LinkClick('132',false,true)" target="content" title="Delete a Contact item process" onmousemove="window.status='Delete a Contact item process'"><img src="icons/11.gif" class="p"> <span id="l132" class="unselected">Delete a Contact item process</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('133')"><img id="imgn133" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('133',true,false)" onDblClick="return LinkDblClick('133')" target="content" title="Supplier Order" onmousemove="window.status='Supplier Order'"><img id="img133" src="icons/1.gif" class="p"> <span id="l133" class="unselected">Supplier Order</span></a></nobr></div>
+<div id="d133" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('134')"><img id="imgn134" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('134',true,false)" onDblClick="return LinkDblClick('134')" target="content" title="Place Supplier Order" onmousemove="window.status='Place Supplier Order'"><img id="img134" src="icons/1.gif" class="p"> <span id="l134" class="unselected">Place Supplier Order</span></a></nobr></div>
+<div id="d134" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/place-supplier-order-process.html" onclick="return LinkClick('135',false,true)" target="content" title="Place Supplier Order process" onmousemove="window.status='Place Supplier Order process'"><img src="icons/11.gif" class="p"> <span id="l135" class="unselected">Place Supplier Order process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('136')"><img id="imgn136" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('136',true,false)" onDblClick="return LinkDblClick('136')" target="content" title="Modify Supplier Order" onmousemove="window.status='Modify Supplier Order'"><img id="img136" src="icons/1.gif" class="p"> <span id="l136" class="unselected">Modify Supplier Order</span></a></nobr></div>
+<div id="d136" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/modify-supplier-order-process.html" onclick="return LinkClick('137',false,true)" target="content" title="Modify Supplier Order process" onmousemove="window.status='Modify Supplier Order process'"><img src="icons/11.gif" class="p"> <span id="l137" class="unselected">Modify Supplier Order process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('138')"><img id="imgn138" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('138',true,false)" onDblClick="return LinkDblClick('138')" target="content" title="Search Supplier Order" onmousemove="window.status='Search Supplier Order'"><img id="img138" src="icons/1.gif" class="p"> <span id="l138" class="unselected">Search Supplier Order</span></a></nobr></div>
+<div id="d138" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/search-supplier-order-process.html" onclick="return LinkClick('139',false,true)" target="content" title="Search Supplier Order process" onmousemove="window.status='Search Supplier Order process'"><img src="icons/11.gif" class="p"> <span id="l139" class="unselected">Search Supplier Order process</span></a></nobr></div>
+</div></div><div><nobr><img src="icons/line.gif" class="p"><a href="#" onClick="return NodeClick('140')"><img id="imgn140" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('140',true,false)" onDblClick="return LinkDblClick('140')" target="content" title="Budget" onmousemove="window.status='Budget'"><img id="img140" src="icons/1.gif" class="p"> <span id="l140" class="unselected">Budget</span></a></nobr></div>
+<div id="d140" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('141')"><img id="imgn141" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('141',true,false)" onDblClick="return LinkDblClick('141')" target="content" title="Add Budget" onmousemove="window.status='Add Budget'"><img id="img141" src="icons/1.gif" class="p"> <span id="l141" class="unselected">Add Budget</span></a></nobr></div>
+<div id="d141" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/adding-of-a-budget-process.html" onclick="return LinkClick('142',false,true)" target="content" title="Adding of a Budget process" onmousemove="window.status='Adding of a Budget process'"><img src="icons/11.gif" class="p"> <span id="l142" class="unselected">Adding of a Budget process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('143')"><img id="imgn143" src="icons/tplus.gif" class="p"></a><a href="#" onclick="return LinkClick('143',true,false)" onDblClick="return LinkDblClick('143')" target="content" title="Update Budget" onmousemove="window.status='Update Budget'"><img id="img143" src="icons/1.gif" class="p"> <span id="l143" class="unselected">Update Budget</span></a></nobr></div>
+<div id="d143" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/line.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/updating-of-a-budget-process.html" onclick="return LinkClick('144',false,true)" target="content" title="Updating of a Budget process" onmousemove="window.status='Updating of a Budget process'"><img src="icons/11.gif" class="p"> <span id="l144" class="unselected">Updating of a Budget process</span></a></nobr></div>
+</div><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><a href="#" onClick="return NodeClick('145')"><img id="imgn145" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('145',true,false)" onDblClick="return LinkDblClick('145')" target="content" title="Delete Budget" onmousemove="window.status='Delete Budget'"><img id="img145" src="icons/1.gif" class="p"> <span id="l145" class="unselected">Delete Budget</span></a></nobr></div>
+<div id="d145" style="display:none"><div><nobr><img src="icons/line.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/deleting-of-a-budget-item-process.html" onclick="return LinkClick('146',false,true)" target="content" title="Deleting of a Budget item process" onmousemove="window.status='Deleting of a Budget item process'"><img src="icons/11.gif" class="p"> <span id="l146" class="unselected">Deleting of a Budget item process</span></a></nobr></div>
+</div></div></div><div><nobr><a href="#" onClick="return NodeClick('147')"><img id="imgn147" src="icons/uaplus.gif" class="p"></a><a href="#" onclick="return LinkClick('147',true,false)" onDblClick="return LinkDblClick('147')" target="content" title="Getting Help" onmousemove="window.status='Getting Help'"><img id="img147" src="icons/1.gif" class="p"> <span id="l147" class="unselected">Getting Help</span></a></nobr></div>
+<div id="d147" style="display:none"><div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('148',false,true)" target="content" title="Introduction" onmousemove="window.status='Introduction'"><img src="icons/11.gif" class="p"> <span id="l148" class="unselected">Introduction</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="javascript:alert('This link is purposely disabled, because the document is created with WinCHM TRIAL version!\n(The registered version will not do so!)');" onclick="return LinkClick('149',false,true)" target="content" title="Help functionality:" onmousemove="window.status='Help functionality:'"><img src="icons/11.gif" class="p"> <span id="l149" class="unselected">Help functionality:</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/tshaped.gif" class="p"><a href="pages/how-to-get-additional-help.html" onclick="return LinkClick('150',false,true)" target="content" title="How to get additional help:" onmousemove="window.status='How to get additional help:'"><img src="icons/11.gif" class="p"> <span id="l150" class="unselected">How to get additional help:</span></a></nobr></div>
+<div><nobr><img src="icons/blank.gif" class="p"><img src="icons/upangle.gif" class="p"><a href="pages/conclusion.html" onclick="return LinkClick('151',false,true)" target="content" title="Conclusion" onmousemove="window.status='Conclusion'"><img src="icons/11.gif" class="p"> <span id="l151" class="unselected">Conclusion</span></a></nobr></div>
+</div><script>divlist = [1,2,3,5,7,9,11,13,15,17,19,20,22,25,32,43,48,76,77,82,87,92,97,102,107,112,117,122,123,126,129,131,133,134,136,138,140,141,143,145,147]</script>
+</body>
+</html>
